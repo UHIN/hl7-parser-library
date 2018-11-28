@@ -1,0 +1,26 @@
+{
+  "name": "uhin/hl7-parser",
+  "description": "A library used to parse HL7 Version 2.x",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kristopher Clayton",
+      "email": "kclayton@uhin.org"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "Uhin\\HL7\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "ext-json":"*"
+  },
+  "require-dev": {
+    "guzzlehttp/guzzle": ">=6.0"
+  }
+}
