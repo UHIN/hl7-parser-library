@@ -84,4 +84,8 @@ class SubField extends Field
 
     }
 
+    public function __isset($name)
+    {
+        return !is_null($this->__get($name));
+    }
 }

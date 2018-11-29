@@ -22,13 +22,45 @@ class HL7 implements JsonSerializable
 
     public function __get($name)
     {
-        if(array_key_exists($name,$this->properties))
+        switch ($name)
         {
-            return $this->properties[$name];
-        }
-        else
-        {
-            return null;
+            case "first_name":
+                return $this->getFirstName();
+                break;
+            case "middle_name":
+                return $this->getMiddleName();
+                break;
+            case "last_name":
+                return $this->getLastName();
+                break;
+            case "message_type":
+                return $this->getMessageType();
+                break;
+            case "patient_type":
+                return $this->getPatientType();
+                break;
+            case "control_number":
+                return $this->getControlNumber();
+                break;
+            case "event_time":
+                return $this->getEventTime();
+                break;
+            case "facility_name":
+                return $this->getFacilityName();
+                break;
+            case "eid":
+                return $this->getIdentifier("UHIN");
+                break;
+            default:
+                if(array_key_exists($name,$this->properties))
+                {
+                    return $this->properties[$name];
+                }
+                else
+                {
+                    return null;
+                }
+                break;
         }
     }
 
@@ -120,39 +152,6 @@ class HL7 implements JsonSerializable
     }
 
     /**
-     * @param $row
-     * @return string
-     */
-    private function generateKey($row)
-    {
-        if(array_key_exists($row[0],$this->properties))
-        {
-            /* Create a new key */
-            return uniqid($row[0]."_",true);
-        }
-        else
-        {
-            return $row[0];
-        }
-    }
-
-    /**
-     * @param $key
-     * @return bool|string
-     */
-    private function sanatizeKey($key)
-    {
-        if(strpos($key,'_') === false)
-        {
-            return $key;
-        }
-        else
-        {
-            return substr($key,0,strpos($key,'_'));
-        }
-    }
-
-    /**
      * @param $text
      * @return mixed
      */
@@ -222,5 +221,258 @@ class HL7 implements JsonSerializable
         }
     }
 
+    /**
+     * @return null
+     */
+    private function getFirstName()
+    {
+        if(is_array($this->PID->{'PID.5'}))
+        {
+            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.2'}))
+            {
+                return $this->PID->{'PID.5'}[0]->{'PID.5.2'};
+            }
+        }
+        else
+        {
+            if (isset($this->PID->{'PID.5'}->{'PID.5.2'}))
+            {
+                return $this->PID->{'PID.5'}->{'PID.5.2'};
+            }
+        }
+        return null;
+    }
+
+    public function __isset($name)
+    {
+        return !is_null($this->__get($name));
+    }
+
+    /**
+     * @return null
+     */
+    private function getMiddleName()
+    {
+        if(is_array($this->PID->{'PID.5'}))
+        {
+            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.3'}))
+            {
+                return $this->PID->{'PID.5'}[0]->{'PID.5.3'};
+            }
+        }
+        else
+        {
+            if (isset($this->PID->{'PID.5'}->{'PID.5.3'}))
+            {
+                return $this->PID->{'PID.5'}->{'PID.5.3'};
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return null
+     */
+    private function getLastName()
+    {
+        if(is_array($this->PID->{'PID.5'}))
+        {
+            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.1'}))
+            {
+                return $this->PID->{'PID.5'}[0]->{'PID.5.1'};
+            }
+        }
+        else
+        {
+            if (isset($this->PID->{'PID.5'}->{'PID.5.1'}))
+            {
+                return $this->PID->{'PID.5'}->{'PID.5.1'};
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return null
+     */
+    private function getFacilityName()
+    {
+        if(isset($this->MSH->{'MSH.4'}->{'MSH.4.1'}))
+        {
+            return $this->MSH->{'MSH.4'}->{'MSH.4.1'};
+        }
+        return null;
+    }
+
+    private function getMessageType()
+    {
+        if(isset($this->MSH->{'MSH.9'}->{'MSH.9.2'}))
+        {
+            return $this->MSH->{'MSH.9'}->{'MSH.9.2'};
+        }
+        return null;
+    }
+
+    private function getPatientType()
+    {
+        if(isset($this->PV1->{'PV1.2'}->{'PV1.2.1'}))
+        {
+            return substr($this->PV1->{'PV1.2'}->{'PV1.2.1'},0,10);
+        }
+        return null;
+    }
+
+    private function getControlNumber()
+    {
+        if(isset($this->MSH->{'MSH.10'}->{'MSH.10.1'}))
+        {
+            return $this->MSH->{'MSH.10'}->{'MSH.10.1'};
+        }
+        return null;
+    }
+
+    private function getEventTime()
+    {
+        if(!isset($this->EVN) || !isset($this->EVN->{'EVN.2'}->{'EVN.2.1'}))
+        {
+            if(isset($this->MSH->{'MSH.7'}->{'MSH.7.1'}))
+            {
+                try
+                {
+                    $time = new \DateTime($this->MSH->{'MSH.7'}->{'MSH.7.1'});
+                    return $time->format("Y-m-d H:i:s");
+                }
+                catch (\Exception $e)
+                {
+                    return null;
+                }
+            }
+        }
+        else if(isset($this->EVN->{'EVN.2'}->{'EVN.2.1'}))
+        {
+            try
+            {
+                $time = new \DateTime($this->EVN->{'EVN.2'}->{'EVN.2.1'});
+                return $time->format("Y-m-d H:i:s");
+            }
+            catch (\Exception $e)
+            {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public function getIdentifier($source)
+    {
+        if(!isset($this->PID))
+        {
+            return null;
+        }
+
+        /* Try PID.2.1 First */
+        if(isset($this->PID->{"PID.2"}))
+        {
+            if(is_array($this->PID->{"PID.2"}))
+            {
+                foreach ($this->PID->{"PID.2"} as $PID)
+                {
+                    if(isset($PID->{"PID.2.4"}))
+                    {
+                        if(is_object($PID->{"PID.2.4"}))
+                        {
+                            if(isset($PID->{"PID.2.4"}->{"PID.2.4.1"}))
+                            {
+                                if(strpos($PID->{"PID.2.4"}->{"PID.2.4.1"}, $source) !== false)
+                                {
+                                    if(isset($PID->{"PID.2.1"}))
+                                    {
+                                        return $PID->{"PID.2.1"};
+                                    }
+                                }
+                            }
+                        }
+                        else if(strpos($PID->{"PID.2.4"}, $source) !== false)
+                        {
+                            if(isset($PID->{"PID.2.1"}))
+                            {
+                                return $PID->{"PID.2.1"};
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (isset($this->PID->{"PID.2"}->{"PID.2.4"}) && strpos($this->PID->{"PID.2"}->{"PID.2.4"},$source) !== false)
+                {
+                    if (isset($this->PID->{"PID.2"}->{"PID.2.1"}))
+                    {
+                        return $this->PID->{"PID.2"}->{"PID.2.1"};
+                    }
+                }
+            }
+        }
+
+        /* Try the PID.3.1 Next */
+        if(isset($this->PID->{"PID.3"}))
+        {
+            if(is_array($this->PID->{"PID.3"}))
+            {
+                foreach ($this->PID->{"PID.3"} as $PID)
+                {
+                    if(isset($PID->{"PID.3.4"}))
+                    {
+                        if(is_object($PID->{"PID.3.4"}))
+                        {
+                            if(isset($PID->{"PID.3.4"}->{"PID.3.4.1"}))
+                            {
+                                if(strpos($PID->{"PID.3.4"}->{"PID.3.4.1"}, $source) !== false)
+                                {
+                                    if(isset($PID->{"PID.3.1"}))
+                                    {
+                                        return $PID->{"PID.3.1"};
+                                    }
+                                }
+                            }
+                        }
+                        else if(strpos($PID->{"PID.3.4"}, $source) !== false)
+                        {
+                            if(isset($PID->{"PID.3.1"}))
+                            {
+                                return $PID->{"PID.3.1"};
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(isset($this->PID->{"PID.3"}->{"PID.3.4"}))
+                {
+                    if(is_object($this->PID->{"PID.3"}->{"PID.3.4"}))
+                    {
+                        if(isset($this->PID->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}))
+                        {
+                            if(strpos($this->PID->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}, $source) !== false)
+                            {
+                                if(isset($this->PID->{"PID.3"}->{"PID.3.1"}))
+                                {
+                                    return $this->PID->{"PID.3"}->{"PID.3.1"};
+                                }
+                            }
+                        }
+                    }
+                    if(strpos($this->PID->{"PID.3"}->{"PID.3.4"}, $source) !== false)
+                    {
+                        if(isset($this->PID->{"PID.3"}->{"PID.3.1"}))
+                        {
+                            return $this->PID->{"PID.3"}->{"PID.3.1"};
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

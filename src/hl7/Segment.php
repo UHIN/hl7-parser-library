@@ -80,6 +80,11 @@ class Segment implements JsonSerializable
         return $this->properties;
     }
 
+    public function __isset($name)
+    {
+        return !is_null($this->__get($name));
+    }
+
 
 
 
