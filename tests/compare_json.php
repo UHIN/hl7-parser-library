@@ -118,6 +118,36 @@ foreach ($files as $file)
                 }
             }
 
+            if(isset($mirth->GT1))
+            {
+                if(!is_array($mirth->GT1))
+                {
+                    $temp = $mirth->GT1;
+                    $mirth->GT1 = [];
+                    $mirth->GT1[] = $temp;
+                }
+            }
+
+            if(isset($mirth->ROL))
+            {
+                if(!is_array($mirth->ROL))
+                {
+                    $temp = $mirth->ROL;
+                    $mirth->ROL = [];
+                    $mirth->ROL[] = $temp;
+                }
+            }
+
+            if(isset($mirth->IN1))
+            {
+                if(!is_array($mirth->IN1))
+                {
+                    $temp = $mirth->IN1;
+                    $mirth->IN1 = [];
+                    $mirth->IN1[] = $temp;
+                }
+            }
+
             $mirth = json_encode($mirth,JSON_PRETTY_PRINT); 
             $mirth = str_replace('{}','""',$mirth);
 

@@ -112,35 +112,31 @@ class HL7 implements JsonSerializable
                             break;
                         /* Repeatable segments go here. Still working on a definitive list. */
                         case "NK1":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "DG1":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "OBX":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "PR1":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "NTE":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "AL1":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "ACC":
-                            $this->properties[$key][] = new Segment($row,$this->separators);
-                            break;
                         case "IAM":
+                        case "GT1":
+                        case "ROL":
+                        case "IN1":
                             $this->properties[$key][] = new Segment($row,$this->separators);
                             break;
                         default:
-                            if(array_key_exists($key,$this->properties))
+                            if(strpos($key,'Z') === 0)
                             {
-                                throw new \Exception("Repeatable Segment found outside of an array. ".$key);
+                                $this->properties[$key][] = new Segment($row,$this->separators);
                             }
-                            $this->properties[$key] = new Segment($row,$this->separators);
+                            else
+                            {
+                                if(array_key_exists($key,$this->properties))
+                                {
+                                    throw new \Exception("Repeatable Segment found outside of an array. ".$key);
+                                }
+                                $this->properties[$key] = new Segment($row,$this->separators);
+                            }
                             break;
                     }
                 }
