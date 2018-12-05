@@ -18,7 +18,7 @@ class Segment implements JsonSerializable
 
         if(!is_array($segment))
         {
-            $segment = explode($this->separators->segment_separator,$segment);
+            $segment = HL7::explode($this->separators->segment_separator,$segment,$this->separators->escape_character);
         }
 
         if(count($segment) > 0)
@@ -36,7 +36,7 @@ class Segment implements JsonSerializable
                     /* Check for Repeat Separator */
                     else if(HL7::containsRepetitionSeparator($value,$this->separators))
                     {
-                        $values = explode($this->separators->repetition_separator,$value);
+                        $values = HL7::explode($this->separators->repetition_separator,$value,$this->separators->escape_character);
                         for ($j = 0; $j < count($values); $j++)
                         {
                             if($values[$j] == "")

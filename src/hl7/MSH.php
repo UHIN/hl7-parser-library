@@ -19,7 +19,7 @@ class MSH Extends Segment implements JsonSerializable
         $this->separators = $separators;
         if(!is_array($segment))
         {
-            $segment = explode($this->separators->segment_separator,$segment);
+            $segment = HL7::explode($this->separators->segment_separator,$segment,$this->separators->escape_character);
         }
 
         if(count($segment) > 0)

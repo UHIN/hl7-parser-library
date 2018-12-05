@@ -84,11 +84,11 @@ class HL7 implements JsonSerializable
 
         try
         {
-            $segments = explode(PHP_EOL,$this->text);
+            $segments = HL7::explode(PHP_EOL,$this->text,$this->separators->escape_character);
 
             foreach ($segments as $value)
             {
-                $row = explode($this->separators->segment_separator, $value);
+                $row = HL7::explode($this->separators->segment_separator, $value,$this->separators->escape_character);
 
                 $key = $row[0]; // $this->generateKey($row);
 
@@ -121,6 +121,18 @@ class HL7 implements JsonSerializable
                             $this->properties[$key][] = new Segment($row,$this->separators);
                             break;
                         case "PR1":
+                            $this->properties[$key][] = new Segment($row,$this->separators);
+                            break;
+                        case "NTE":
+                            $this->properties[$key][] = new Segment($row,$this->separators);
+                            break;
+                        case "AL1":
+                            $this->properties[$key][] = new Segment($row,$this->separators);
+                            break;
+                        case "ACC":
+                            $this->properties[$key][] = new Segment($row,$this->separators);
+                            break;
+                        case "IAM":
                             $this->properties[$key][] = new Segment($row,$this->separators);
                             break;
                         default:
@@ -187,38 +199,122 @@ class HL7 implements JsonSerializable
 
     public static function containsComponentSeparator($input,Separators $separators)
     {
-        if(strpos($input,$separators->component_separator) === false)
-        {
-            return false;
-        }
-        else
+        if(HL7::str_contains($separators->component_separator,$input,$separators->escape_character))
         {
             return true;
         }
+        else
+        {
+            return false;
+        }
+//        if(preg_match('/(?<!\\'.$separators->escape_character.'.)\\'.$separators->component_separator.'/',$input))
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return false;
+//        }
     }
 
     public static function containsRepetitionSeparator($input,Separators $separators)
     {
-        if(strpos($input,$separators->repetition_separator) === false)
-        {
-            return false;
-        }
-        else
+        if(HL7::str_contains($separators->repetition_separator,$input,$separators->escape_character))
         {
             return true;
         }
+        else
+        {
+            return false;
+        }
+//        if(preg_match('/(?<!\\'.$separators->escape_character.'.)\\'.$separators->repetition_separator.'/',$input))
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return false;
+//        }
     }
 
     public static function containsSubcomponentSeparator($input, Separators $separators)
     {
-        if(strpos($input,$separators->subcomponent_separator) === false)
-        {
-            return false;
-        }
-        else
+        if(HL7::str_contains($separators->subcomponent_separator,$input,$separators->escape_character))
         {
             return true;
         }
+        else
+        {
+            return false;
+        }
+//        if(preg_match('/(?<!\\'.$separators->escape_character.'.)\\'.$separators->subcomponent_separator.'/',$input))
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+    }
+
+    /**
+     * @param $search
+     * @param $subject
+     * @param $escapeCharacter
+     * @return bool
+     */
+    public static function str_contains($search,$subject,$escapeCharacter)
+    {
+        $str_array = str_split($subject);
+        for ($i = 0; $i < count($str_array);$i++)
+        {
+            if($str_array[$i] == $search)
+            {
+                /* Look for escape character */
+                if($i > 0 && ($str_array[$i-1] == $escapeCharacter))
+                {
+                    continue;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $delimiter
+     * @param $str
+     * @param string $escapeChar
+     * @return array
+     * Stole this code from https://r.je/php-explode-split-with-escape-character.html
+     */
+    public static function explode($delimiter, $str, $escapeChar = '\\')
+    {
+
+        //Just some random placeholders that won't ever appear in the source $str
+
+        $double = "\0\0\0_doub";
+
+        $escaped = "\0\0\0_esc";
+
+        $str = str_replace($escapeChar . $escapeChar, $double, $str);
+
+        $str = str_replace($escapeChar . $delimiter, $escaped, $str);
+
+        $split = explode($delimiter, $str);
+
+        if($escapeChar = '\\')
+        {
+            $escapeChar = '\\';
+        }
+
+        foreach ($split as &$val) $val = str_replace([$double, $escaped], [$escapeChar.$escapeChar, $escapeChar.$delimiter], $val);
+
+        return $split;
+
     }
 
     /**

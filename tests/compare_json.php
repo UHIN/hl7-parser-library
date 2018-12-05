@@ -36,7 +36,89 @@ foreach ($files as $file)
 
             file_put_contents($libJSONFile, json_encode($hl7, JSON_PRETTY_PRINT));
 
-            $mirth = json_encode(getHL7XML(base64_encode($data)),JSON_PRETTY_PRINT);
+            $mirth = getHL7XML(base64_encode($data));
+
+            if(isset($mirth->NK1))
+            {
+                if(!is_array($mirth->NK1))
+                {
+                    $temp = $mirth->NK1;
+                    $mirth->NK1 = [];
+                    $mirth->NK1[] = $temp;
+                }
+            }
+
+            if(isset($mirth->DG1))
+            {
+                if(!is_array($mirth->DG1))
+                {
+                    $temp = $mirth->DG1;
+                    $mirth->DG1 = [];
+                    $mirth->DG1[] = $temp;
+                }
+            }
+
+            if(isset($mirth->OBX))
+            {
+                if(!is_array($mirth->OBX))
+                {
+                    $temp = $mirth->OBX;
+                    $mirth->OBX = [];
+                    $mirth->OBX[] = $temp;
+                }
+            }
+
+            if(isset($mirth->PR1))
+            {
+                if(!is_array($mirth->PR1))
+                {
+                    $temp = $mirth->PR1;
+                    $mirth->PR1 = [];
+                    $mirth->PR1[] = $temp;
+                }
+            }
+
+            if(isset($mirth->NTE))
+            {
+                if(!is_array($mirth->NTE))
+                {
+                    $temp = $mirth->NTE;
+                    $mirth->NTE = [];
+                    $mirth->NTE[] = $temp;
+                }
+            }
+
+            if(isset($mirth->AL1))
+            {
+                if(!is_array($mirth->AL1))
+                {
+                    $temp = $mirth->AL1;
+                    $mirth->AL1 = [];
+                    $mirth->AL1[] = $temp;
+                }
+            }
+
+            if(isset($mirth->ACC))
+            {
+                if(!is_array($mirth->ACC))
+                {
+                    $temp = $mirth->ACC;
+                    $mirth->ACC = [];
+                    $mirth->ACC[] = $temp;
+                }
+            }
+
+            if(isset($mirth->IAM))
+            {
+                if(!is_array($mirth->IAM))
+                {
+                    $temp = $mirth->IAM;
+                    $mirth->IAM = [];
+                    $mirth->IAM[] = $temp;
+                }
+            }
+
+            $mirth = json_encode($mirth,JSON_PRETTY_PRINT); 
             $mirth = str_replace('{}','""',$mirth);
 
             file_put_contents($mirthJSONFile, $mirth);

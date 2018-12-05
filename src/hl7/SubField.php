@@ -47,7 +47,7 @@ class SubField extends Field
     {
         if(HL7::containsComponentSeparator($input,$this->separators))
         {
-            $values = explode($this->separators->component_separator,$input);
+            $values = HL7::explode($this->separators->component_separator,$input,$this->separators->escape_character);
 
             for ($i=0; $i < count($values); $i++)
             {
@@ -63,7 +63,7 @@ class SubField extends Field
         }
         else if(HL7::containsSubcomponentSeparator($input,$this->separators))
         {
-            $values = explode($this->separators->subcomponent_separator,$input);
+            $values = HL7::explode($this->separators->subcomponent_separator,$input,$this->separators->escape_character);
 
             for ($i=0; $i < count($values); $i++)
             {
