@@ -123,6 +123,7 @@ class HL7 implements JsonSerializable
                         case "ROL":
                         case "IN1":
                         case "IN2":
+                        case "PID":
                             $this->properties[$key][] = new Segment($row,$this->separators);
                             break;
                         default:
@@ -319,18 +320,18 @@ class HL7 implements JsonSerializable
      */
     private function getFirstName()
     {
-        if(is_array($this->PID->{'PID.5'}))
+        if(is_array($this->PID[0]->{'PID.5'}))
         {
-            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.2'}))
+            if (isset($this->PID[0]->{'PID.5'}[0]->{'PID.5.2'}))
             {
-                return $this->PID->{'PID.5'}[0]->{'PID.5.2'};
+                return $this->PID[0]->{'PID.5'}[0]->{'PID.5.2'};
             }
         }
         else
         {
-            if (isset($this->PID->{'PID.5'}->{'PID.5.2'}))
+            if (isset($this->PID[0]->{'PID.5'}->{'PID.5.2'}))
             {
-                return $this->PID->{'PID.5'}->{'PID.5.2'};
+                return $this->PID[0]->{'PID.5'}->{'PID.5.2'};
             }
         }
         return null;
@@ -346,18 +347,18 @@ class HL7 implements JsonSerializable
      */
     private function getMiddleName()
     {
-        if(is_array($this->PID->{'PID.5'}))
+        if(is_array($this->PID[0]->{'PID.5'}))
         {
-            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.3'}))
+            if (isset($this->PID[0]->{'PID.5'}[0]->{'PID.5.3'}))
             {
-                return $this->PID->{'PID.5'}[0]->{'PID.5.3'};
+                return $this->PID[0]->{'PID.5'}[0]->{'PID.5.3'};
             }
         }
         else
         {
-            if (isset($this->PID->{'PID.5'}->{'PID.5.3'}))
+            if (isset($this->PID[0]->{'PID.5'}->{'PID.5.3'}))
             {
-                return $this->PID->{'PID.5'}->{'PID.5.3'};
+                return $this->PID[0]->{'PID.5'}->{'PID.5.3'};
             }
         }
         return null;
@@ -368,18 +369,18 @@ class HL7 implements JsonSerializable
      */
     private function getLastName()
     {
-        if(is_array($this->PID->{'PID.5'}))
+        if(is_array($this->PID[0]->{'PID.5'}))
         {
-            if (isset($this->PID->{'PID.5'}[0]->{'PID.5.1'}))
+            if (isset($this->PID[0]->{'PID.5'}[0]->{'PID.5.1'}))
             {
-                return $this->PID->{'PID.5'}[0]->{'PID.5.1'};
+                return $this->PID[0]->{'PID.5'}[0]->{'PID.5.1'};
             }
         }
         else
         {
-            if (isset($this->PID->{'PID.5'}->{'PID.5.1'}))
+            if (isset($this->PID[0]->{'PID.5'}->{'PID.5.1'}))
             {
-                return $this->PID->{'PID.5'}->{'PID.5.1'};
+                return $this->PID[0]->{'PID.5'}->{'PID.5.1'};
             }
         }
         return null;
@@ -464,11 +465,11 @@ class HL7 implements JsonSerializable
         }
 
         /* Try PID.2.1 First */
-        if(isset($this->PID->{"PID.2"}))
+        if(isset($this->PID[0]->{"PID.2"}))
         {
-            if(is_array($this->PID->{"PID.2"}))
+            if(is_array($this->PID[0]->{"PID.2"}))
             {
-                foreach ($this->PID->{"PID.2"} as $PID)
+                foreach ($this->PID[0]->{"PID.2"} as $PID)
                 {
                     if(isset($PID->{"PID.2.4"}))
                     {
@@ -497,22 +498,22 @@ class HL7 implements JsonSerializable
             }
             else
             {
-                if (isset($this->PID->{"PID.2"}->{"PID.2.4"}) && strpos($this->PID->{"PID.2"}->{"PID.2.4"},$source) !== false)
+                if (isset($this->PID[0]->{"PID.2"}->{"PID.2.4"}) && strpos($this->PID[0]->{"PID.2"}->{"PID.2.4"},$source) !== false)
                 {
-                    if (isset($this->PID->{"PID.2"}->{"PID.2.1"}))
+                    if (isset($this->PID[0]->{"PID.2"}->{"PID.2.1"}))
                     {
-                        return $this->PID->{"PID.2"}->{"PID.2.1"};
+                        return $this->PID[0]->{"PID.2"}->{"PID.2.1"};
                     }
                 }
             }
         }
 
         /* Try the PID.3.1 Next */
-        if(isset($this->PID->{"PID.3"}))
+        if(isset($this->PID[0]->{"PID.3"}))
         {
-            if(is_array($this->PID->{"PID.3"}))
+            if(is_array($this->PID[0]->{"PID.3"}))
             {
-                foreach ($this->PID->{"PID.3"} as $PID)
+                foreach ($this->PID[0]->{"PID.3"} as $PID)
                 {
                     if(isset($PID->{"PID.3.4"}))
                     {
@@ -541,26 +542,26 @@ class HL7 implements JsonSerializable
             }
             else
             {
-                if(isset($this->PID->{"PID.3"}->{"PID.3.4"}))
+                if(isset($this->PID[0]->{"PID.3"}->{"PID.3.4"}))
                 {
-                    if(is_object($this->PID->{"PID.3"}->{"PID.3.4"}))
+                    if(is_object($this->PID[0]->{"PID.3"}->{"PID.3.4"}))
                     {
-                        if(isset($this->PID->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}))
+                        if(isset($this->PID[0]->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}))
                         {
-                            if(strpos($this->PID->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}, $source) !== false)
+                            if(strpos($this->PID[0]->{"PID.3"}->{"PID.3.4"}->{"PID.3.4.1"}, $source) !== false)
                             {
-                                if(isset($this->PID->{"PID.3"}->{"PID.3.1"}))
+                                if(isset($this->PID[0]->{"PID.3"}->{"PID.3.1"}))
                                 {
-                                    return $this->PID->{"PID.3"}->{"PID.3.1"};
+                                    return $this->PID[0]->{"PID.3"}->{"PID.3.1"};
                                 }
                             }
                         }
                     }
-                    if(strpos($this->PID->{"PID.3"}->{"PID.3.4"}, $source) !== false)
+                    if(strpos($this->PID[0]->{"PID.3"}->{"PID.3.4"}, $source) !== false)
                     {
-                        if(isset($this->PID->{"PID.3"}->{"PID.3.1"}))
+                        if(isset($this->PID[0]->{"PID.3"}->{"PID.3.1"}))
                         {
-                            return $this->PID->{"PID.3"}->{"PID.3.1"};
+                            return $this->PID[0]->{"PID.3"}->{"PID.3.1"};
                         }
                     }
                 }
