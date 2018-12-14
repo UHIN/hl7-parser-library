@@ -124,6 +124,7 @@ class HL7 implements JsonSerializable
                         case "IN1":
                         case "IN2":
                         case "PID":
+                        case "CON":
                             $this->properties[$key][] = new Segment($row,$this->separators);
                             break;
                         default:
