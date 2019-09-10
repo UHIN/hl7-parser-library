@@ -3,6 +3,7 @@
 *.log
 *.pid
 /packages
+/vendor
 
 /tests
 # Created by https://www.gitignore.io/api/osx,linux,phpstorm,sublimetext,visualstudiocode
