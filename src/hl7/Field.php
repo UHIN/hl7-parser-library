@@ -94,4 +94,32 @@ class Field extends Segment implements JsonSerializable
     {
         return !is_null($this->__get($name));
     }
+
+    public function glue()
+    {
+        $hl7 = "";
+        $first = true;
+        foreach ($this->properties as $key => $property)
+        {
+            if(is_object($this->properties->{$key}))
+            {
+                $hl7 = $this->properties->{$key}->glue();
+            }
+            else
+            {
+                if(!$first)
+                {
+                    $hl7 = $hl7.$this->separators->component_separator.$property;
+                }
+                else
+                {
+                    $hl7 = $hl7.$property;
+                    $first = false;
+                }
+
+            }
+
+        }
+        return $hl7;
+    }
 }

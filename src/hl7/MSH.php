@@ -48,4 +48,25 @@ class MSH Extends Segment implements JsonSerializable
             }
         }
     }
+
+    public function glue()
+    {
+        $hl7 = "";
+        foreach ($this->properties as $key => $value)
+        {
+            if($key != 'MSH.1')
+            {
+                if(is_object($this->properties->{$key}))
+                {
+                    $hl7 = $hl7.$this->separators->segment_separator.$this->properties->{$key}->glue();
+                }
+                else
+                {
+                    $hl7 = $hl7.$this->separators->segment_separator.$value;
+                }
+            }
+        }
+
+        return $hl7;
+    }
 }

@@ -85,6 +85,23 @@ class Segment implements JsonSerializable
         return !is_null($this->__get($name));
     }
 
+    public function glue()
+    {
+        $hl7 = "";
+        foreach ($this->properties as $key => $value)
+        {
+            if(is_object($this->properties->{$key}))
+            {
+                $hl7 = $hl7.$this->separators->segment_separator.$this->properties->{$key}->glue();
+            }
+            else
+            {
+                $hl7 = $hl7.$this->separators->segment_separator.$value;
+            }
+        }
+        return $hl7;
+    }
+
 
 
 
