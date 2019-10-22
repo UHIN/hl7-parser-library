@@ -863,6 +863,44 @@ class HL7 implements JsonSerializable
     }
 
     /**
+     * @return \stdClass
+     */
+    private function getProvider()
+    {
+        /*
+        AttendingDoctorFirst - PV1.7.3
+        AttendingDoctorMiddle - PV1.7.4
+        AttendingDoctorLast - PV1.7.2
+        AttendingDoctorNPI - PV1.7.1
+        */
+
+        $provider = new \stdClass();
+        $provider->first_name = null;
+        $provider->middle_name = null;
+        $provider->last_name = null;
+        $provider->npi = null;
+
+        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.3'})) {
+            $provider->first_name = $this->PV1->{'PV1.7'}->{'PV1.7.3'};
+        }
+
+        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.4'})) {
+            $provider->middle_name = $this->PV1->{'PV1.7'}->{'PV1.7.4'};
+        }
+
+        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.2'})) {
+            $provider->last_name = $this->PV1->{'PV1.7'}->{'PV1.7.2'};
+        }
+
+        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.1'})) {
+            $provider->npi = $this->PV1->{'PV1.7'}->{'PV1.7.1'};
+        }
+
+        return $provider;
+
+    }
+
+    /**
      * @param $value
      * @param $pid_value
      * @return \stdClass|null
@@ -1646,42 +1684,4 @@ class HL7 implements JsonSerializable
     }
     //</editor-fold>
 
-
-    /**
-     * @return \stdClass
-     */
-    private function getProvider()
-    {
-        /*
-        AttendingDoctorFirst - PV1.7.3
-        AttendingDoctorMiddle - PV1.7.4
-        AttendingDoctorLast - PV1.7.2
-        AttendingDoctorNPI - PV1.7.1
-        */
-
-        $provider = new \stdClass();
-        $provider->first_name = null;
-        $provider->middle_name = null;
-        $provider->last_name = null;
-        $provider->npi = null;
-
-        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.3'})) {
-            $provider->first_name = $this->PV1->{'PV1.7'}->{'PV1.7.3'};
-        }
-
-        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.4'})) {
-            $provider->middle_name = $this->PV1->{'PV1.7'}->{'PV1.7.4'};
-        }
-
-        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.2'})) {
-            $provider->last_name = $this->PV1->{'PV1.7'}->{'PV1.7.2'};
-        }
-
-        if (isset($this->PV1->{'PV1.7'}->{'PV1.7.1'})) {
-            $provider->npi = $this->PV1->{'PV1.7'}->{'PV1.7.1'};
-        }
-
-        return $provider;
-
-    }
 }
