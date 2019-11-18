@@ -196,6 +196,7 @@ class HL7 implements JsonSerializable
      */
     public static function normalizeLineEndings($text)
     {
+        $text = str_replace("\\.br\\", ".br.",$text);
         $text = str_replace("\r\n", PHP_EOL, $text);
 
         $text = str_replace("\r", PHP_EOL, $text);
