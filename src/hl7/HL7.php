@@ -709,29 +709,34 @@ class HL7 implements JsonSerializable
     }
 
     /**
-     * @return \stdClass|null
+     * @return array
      */
     private function getPatientComplaint()
     {
-        $complaint = new \stdClass();
-        $complaint->patient_complaint_code = null;
-        $complaint->patient_complaint = null;
+        $complaints = [];
 
-        if(isset($this->PV2->{'PV2.3'}->{'PV2.3.1'}) && !is_object($this->PV2->{'PV2.3'}->{'PV2.3.1'}))
+        if(isset($this->PV2))
         {
-            $complaint->patient_complaint_code = $this->PV2->{'PV2.3'}->{'PV2.3.1'};
-        }
+            foreach ($this->PV2 as $pv2)
+            {
+                $complaint = new \stdClass();
+                $complaint->patient_complaint_code = null;
+                $complaint->patient_complaint = null;
 
-        if(isset($this->PV2->{'PV2.3'}->{'PV2.3.2'}) && !is_object($this->PV2->{'PV2.3'}->{'PV2.3.2'}))
-        {
-            $complaint->patient_complaint = $this->PV2->{'PV2.3'}->{'PV2.3.2'};
-        }
+                if (isset($pv2->{'PV2.3'}->{'PV2.3.1'}) && !is_object($pv2->{'PV2.3'}->{'PV2.3.1'})) {
+                    $complaint->patient_complaint_code = $pv2->{'PV2.3'}->{'PV2.3.1'};
+                }
 
-        if(is_null($complaint->patient_complaint_code) && is_null($complaint->patient_complaint))
-        {
-            return null;
+                if (isset($pv2->{'PV2.3'}->{'PV2.3.2'}) && !is_object($pv2->{'PV2.3'}->{'PV2.3.2'})) {
+                    $complaint->patient_complaint = $pv2->{'PV2.3'}->{'PV2.3.2'};
+                }
+
+                if (!is_null($complaint->patient_complaint_code) || !is_null($complaint->patient_complaint)) {
+                    $complaints[] = $complaint;
+                }
+            }
         }
-        return $complaint;
+        return $complaints;
     }
 
 

@@ -33,10 +33,5 @@ class Separators
         $this->repetition_separator = substr($hl7,5,1);
         $this->escape_character = substr($hl7,6,1);
         $this->subcomponent_separator = substr($hl7,7,1);
-
-//        if($this->escape_character == '\\')
-//        {
-//            $this->escape_character = '\\\\';
-//        }
     }
 }
