@@ -928,13 +928,14 @@ class HL7 implements JsonSerializable
         {
             $phone->type = $value->{'PID.'.$pid_value.'.2'};
         }
-        else if($pid_value == 14)
-        {
-            $phone->type = 'WRK';
-        }
         else
         {
             $phone->type = "";
+        }
+
+        if($pid_value == 14)
+        {
+            $phone->type = 'WRK';
         }
 
         if(isset($value->{'PID.'.$pid_value.'.1'}) && !is_object($value->{'PID.'.$pid_value.'.1'}))
@@ -982,6 +983,7 @@ class HL7 implements JsonSerializable
             case "ORN":
                 return "Other Residence Number";
             case "WPN":
+            case "WRK":
                 return "Work Number";
             case "VHN":
                 return "Vacation Home Number";
