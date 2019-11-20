@@ -972,7 +972,7 @@ class HL7 implements JsonSerializable
      */
     private function normalizePhoneTypes($type)
     {
-        if($type = "")
+        if($type == "")
         {
             $type = 'PRN';
         }
