@@ -556,14 +556,16 @@ class HL7 implements JsonSerializable
      */
     private function getDOB()
     {
-        try
-        {
-            $date = new \DateTime($this->PID[0]->{'PID.7'}->{'PID.7.1'});
-            return $date->format('m/d/Y');
+        if(isset($this->PID[0]->{'PID.7'}->{'PID.7.1'})) {
+            try {
+                $date = new \DateTime($this->PID[0]->{'PID.7'}->{'PID.7.1'});
+                return $date->format('m/d/Y');
+            } catch (\Exception $e) {
+                return $this->PID[0]->{'PID.7'}->{'PID.7.1'};
+            }
         }
-        catch (\Exception $e)
-        {
-            return $this->PID[0]->{'PID.7'}->{'PID.7.1'};
+        else{
+            return null;
         }
     }
 
@@ -797,7 +799,7 @@ class HL7 implements JsonSerializable
                     $diag->diagnosis_description = $dg->{'DG1.4'}->{'DG1.4.1'};
                 }
 
-                if(!is_null($diag->diagnosis_code) && !is_null($diag->diagnosis_description))
+                if(!is_null($diag->diagnosis_code) || !is_null($diag->diagnosis_description))
                 {
                     $diags[] = $diag;
                 }
