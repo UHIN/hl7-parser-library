@@ -799,7 +799,7 @@ class HL7 implements JsonSerializable
 
                 if(!is_null($diag->diagnosis_code) && !is_null($diag->diagnosis_description))
                 {
-                     $diags[] = $diag;
+                    $diags[] = $diag;
                 }
             }
         }
@@ -938,7 +938,7 @@ class HL7 implements JsonSerializable
             $phone->type = 'WRK';
         }
 
-        if(isset($value->{'PID.'.$pid_value.'.1'}) && !is_object($value->{'PID.'.$pid_value.'.1'}))
+        if(isset($value->{'PID.'.$pid_value.'.1'}) && !is_object($value->{'PID.'.$pid_value.'.1'}) && $value->{'PID.'.$pid_value.'.1'} != "")
         {
             $phone->number = $value->{'PID.'.$pid_value.'.1'};
         }
@@ -976,8 +976,9 @@ class HL7 implements JsonSerializable
         {
             $type = 'PRN';
         }
-        switch ($type)
+        switch (strtoupper($type))
         {
+            case "HOME":
             case "PRN":
                 return "Primary Residence Number";
             case "ORN":
