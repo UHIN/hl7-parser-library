@@ -405,7 +405,7 @@ class HL7 implements JsonSerializable
     private function getMessageType()
     {
         if (isset($this->MSH->{'MSH.9'}->{'MSH.9.2'})) {
-            return $this->normalizeMessageType($this->MSH->{'MSH.9'}->{'MSH.9.2'});
+            return $this->MSH->{'MSH.9'}->{'MSH.9.2'};
         }
         return null;
     }
