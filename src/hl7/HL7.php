@@ -441,20 +441,35 @@ class HL7 implements JsonSerializable
     {
         if (!isset($this->EVN) || !isset($this->EVN->{'EVN.2'}->{'EVN.2.1'})) {
             if (isset($this->MSH->{'MSH.7'}->{'MSH.7.1'})) {
-                try {
-                    $time = new \DateTime($this->MSH->{'MSH.7'}->{'MSH.7.1'});
-                    return $time->format("Y-m-d H:i:s");
-                } catch (\Exception $e) {
-                    return null;
-                }
+                return $this->parseDate($this->MSH->{'MSH.7'}->{'MSH.7.1'});
             }
         } else if (isset($this->EVN->{'EVN.2'}->{'EVN.2.1'})) {
-            try {
-                $time = new \DateTime($this->EVN->{'EVN.2'}->{'EVN.2.1'});
-                return $time->format("Y-m-d H:i:s");
-            } catch (\Exception $e) {
-                return null;
-            }
+            return $this->parseDate($this->EVN->{'EVN.2'}->{'EVN.2.1'});
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $input
+     * @return string|null
+     */
+    private function parseDate($input)
+    {
+        /* Try standard date formats */
+        try {
+            $time = new \DateTime($input);
+            return $time->format("Y-m-d H:i:s");
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
+
+        /* Try some know custom date formats */
+        try {
+            $time = \DateTime::createFromFormat('YmdHis.vO', $input);
+            return $time->format("Y-m-d H:i:s");
+        } catch (\Exception $e) {
+            $e->getMessage();
         }
         return null;
     }
