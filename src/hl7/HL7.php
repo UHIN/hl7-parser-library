@@ -3,7 +3,6 @@
 namespace Uhin\HL7;
 
 
-
 use JsonSerializable;
 
 
@@ -197,7 +196,7 @@ class HL7 implements JsonSerializable
      */
     public static function normalizeLineEndings($text)
     {
-        $text = str_replace("\\.br\\", ".br.",$text);
+        $text = str_replace("\\.br\\", ".br.", $text);
         $text = str_replace("\r\n", PHP_EOL, $text);
 
         $text = str_replace("\r", PHP_EOL, $text);
@@ -412,7 +411,6 @@ class HL7 implements JsonSerializable
     }
 
 
-
     /**
      * @return bool|string|null
      */
@@ -468,7 +466,19 @@ class HL7 implements JsonSerializable
         /* Try some know custom date formats */
         try {
             $time = \DateTime::createFromFormat('YmdHis.vO', $input);
-            return $time->format("Y-m-d H:i:s");
+            if ($time) {
+                return $time->format("Y-m-d H:i:s");
+            }
+
+            $time = \DateTime::createFromFormat('YmdGiO', $input);
+            if ($time) {
+                return $time->format("Y-m-d H:i:s");
+            }
+
+            $time = \DateTime::createFromFormat('YmdGis.v', $input);
+            if ($time) {
+                return $time->format("Y-m-d H:i:s");
+            }
         } catch (\Exception $e) {
             $e->getMessage();
         }
@@ -572,15 +582,14 @@ class HL7 implements JsonSerializable
      */
     private function getDOB()
     {
-        if(isset($this->PID[0]->{'PID.7'}->{'PID.7.1'})) {
+        if (isset($this->PID[0]->{'PID.7'}->{'PID.7.1'})) {
             try {
                 $date = new \DateTime($this->PID[0]->{'PID.7'}->{'PID.7.1'});
                 return $date->format('m/d/Y');
             } catch (\Exception $e) {
                 return $this->PID[0]->{'PID.7'}->{'PID.7.1'};
             }
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -590,23 +599,18 @@ class HL7 implements JsonSerializable
      */
     private function getAddress()
     {
-        $addresses= [];
+        $addresses = [];
 
         if (isset($this->PID[0]->{'PID.11'}) && is_array($this->PID[0]->{'PID.11'})) {
-            foreach ($this->PID[0]->{'PID.11'} as $current)
-            {
+            foreach ($this->PID[0]->{'PID.11'} as $current) {
                 $address = $this->extractAddress($current);
-                if(!is_null($address))
-                {
+                if (!is_null($address)) {
                     $addresses[] = $address;
                 }
             }
-        }
-        else if(isset($this->PID[0]->{'PID.11'}))
-        {
+        } else if (isset($this->PID[0]->{'PID.11'})) {
             $address = $this->extractAddress($this->PID[0]->{'PID.11'});
-            if(!is_null($address))
-            {
+            if (!is_null($address)) {
                 $addresses[] = $address;
             }
         }
@@ -659,26 +663,20 @@ class HL7 implements JsonSerializable
         $admit->admit_source = null;
         $admit->admit_time = null;
 
-        if(isset($this->PV1->{'PV1.14'}->{'PV1.14.1'}) && !is_object($this->PV1->{'PV1.14'}->{'PV1.14.1'}))
-        {
+        if (isset($this->PV1->{'PV1.14'}->{'PV1.14.1'}) && !is_object($this->PV1->{'PV1.14'}->{'PV1.14.1'})) {
             $admit->admit_source = $this->normalizeAdmitSource($this->PV1->{'PV1.14'}->{'PV1.14.1'});
         }
 
-        if(isset($this->PV1->{'PV1.44'}->{'PV1.44.1'}) && !is_object($this->PV1->{'PV1.44'}->{'PV1.44.1'}))
-        {
-            try
-            {
+        if (isset($this->PV1->{'PV1.44'}->{'PV1.44.1'}) && !is_object($this->PV1->{'PV1.44'}->{'PV1.44.1'})) {
+            try {
                 $time = new \DateTime($this->PV1->{'PV1.44'}->{'PV1.44.1'});
                 $admit->admit_time = $time->format("Y-m-d H:i:s");
-            }
-            catch (\Exception $e)
-            {
+            } catch (\Exception $e) {
                 $admit->admit_time = $this->PV1->{'PV1.44'}->{'PV1.44.1'};
             }
         }
 
-        if(is_null($admit->admit_time) && is_null($admit->admit_source))
-        {
+        if (is_null($admit->admit_time) && is_null($admit->admit_source)) {
             return null;
         }
 
@@ -696,31 +694,24 @@ class HL7 implements JsonSerializable
         $discharge->discharge_to_location = null;
         $discharge->discharge_time = null;
 
-        if(isset($this->PV1->{'PV1.45'}->{'PV1.45.1'}) && !is_object($this->PV1->{'PV1.45'}->{'PV1.45.1'}))
-        {
-            try
-            {
+        if (isset($this->PV1->{'PV1.45'}->{'PV1.45.1'}) && !is_object($this->PV1->{'PV1.45'}->{'PV1.45.1'})) {
+            try {
                 $time = new \DateTime($this->PV1->{'PV1.45'}->{'PV1.45.1'});
-                $discharge->discharge_time = $time->format("Y-m-d H:i:s"); ;
-            }
-            catch (\Exception $e)
-            {
+                $discharge->discharge_time = $time->format("Y-m-d H:i:s");;
+            } catch (\Exception $e) {
                 $discharge->discharge_time = $this->PV1->{'PV1.45'}->{'PV1.45.1'};
             }
         }
 
-        if(isset($this->PV1->{'PV1.36'}->{'PV1.36.1'}) && !is_object($this->PV1->{'PV1.36'}->{'PV1.36.1'}))
-        {
+        if (isset($this->PV1->{'PV1.36'}->{'PV1.36.1'}) && !is_object($this->PV1->{'PV1.36'}->{'PV1.36.1'})) {
             $discharge->discharge_disposition = $this->PV1->{'PV1.36'}->{'PV1.36.1'};
         }
 
-        if(isset($this->PV1->{'PV1.37'}->{'PV1.37.1'}) && !is_object($this->PV1->{'PV1.37'}->{'PV1.37.1'}))
-        {
+        if (isset($this->PV1->{'PV1.37'}->{'PV1.37.1'}) && !is_object($this->PV1->{'PV1.37'}->{'PV1.37.1'})) {
             $discharge->discharge_to_location = $this->PV1->{'PV1.37'}->{'PV1.37.1'};
         }
 
-        if(is_null($discharge->discharge_disposition) && is_null($discharge->discharge_to_location) && is_null($discharge->discharge_time))
-        {
+        if (is_null($discharge->discharge_disposition) && is_null($discharge->discharge_to_location) && is_null($discharge->discharge_time)) {
             return null;
         }
         return $discharge;
@@ -733,10 +724,8 @@ class HL7 implements JsonSerializable
     {
         $complaints = [];
 
-        if(isset($this->PV2))
-        {
-            foreach ($this->PV2 as $pv2)
-            {
+        if (isset($this->PV2)) {
+            foreach ($this->PV2 as $pv2) {
                 $complaint = new \stdClass();
                 $complaint->patient_complaint_code = null;
                 $complaint->patient_complaint = null;
@@ -764,27 +753,21 @@ class HL7 implements JsonSerializable
         $death->death_indicator = null;
         $death->date_of_death = null;
 
-        if(isset($this->PID[0]->{'PID.30'}->{'PID.30.1'}) && !is_object($this->PID[0]->{'PID.30'}->{'PID.30.1'}))
-        {
+        if (isset($this->PID[0]->{'PID.30'}->{'PID.30.1'}) && !is_object($this->PID[0]->{'PID.30'}->{'PID.30.1'})) {
             $death->death_indicator = $this->PID[0]->{'PID.30'}->{'PID.30.1'};
         }
 
-        if(isset($this->PID[0]->{'PID.29'}->{'PID.29.1'}) && !is_object($this->PID[0]->{'PID.29'}->{'PID.29.1'}))
-        {
+        if (isset($this->PID[0]->{'PID.29'}->{'PID.29.1'}) && !is_object($this->PID[0]->{'PID.29'}->{'PID.29.1'})) {
             $death->date_of_death = $this->PID[0]->{'PID.29'}->{'PID.29.1'};
-            try
-            {
+            try {
                 $time = new \DateTime($this->PID[0]->{'PID.29'}->{'PID.29.1'});
-                $death->date_of_death  = $time->format("Y-m-d H:i:s"); ;
-            }
-            catch (\Exception $e)
-            {
-                $death->date_of_death  = $this->PID[0]->{'PID.29'}->{'PID.29.1'};
+                $death->date_of_death = $time->format("Y-m-d H:i:s");;
+            } catch (\Exception $e) {
+                $death->date_of_death = $this->PID[0]->{'PID.29'}->{'PID.29.1'};
             }
         }
 
-        if(is_null($death->death_indicator) && is_null($death->date_of_death))
-        {
+        if (is_null($death->death_indicator) && is_null($death->date_of_death)) {
             return null;
         }
 
@@ -797,26 +780,21 @@ class HL7 implements JsonSerializable
     private function getDiagnosisInfo()
     {
         $diags = [];
-        if(isset($this->DG1))
-        {
-            foreach ($this->DG1 as $dg)
-            {
+        if (isset($this->DG1)) {
+            foreach ($this->DG1 as $dg) {
                 $diag = new \stdClass();
                 $diag->diagnosis_code = null;
                 $diag->diagnosis_description = null;
 
-                if(isset($dg->{'DG1.3'}->{'DG1.3.1'}))
-                {
+                if (isset($dg->{'DG1.3'}->{'DG1.3.1'})) {
                     $diag->diagnosis_code = $dg->{'DG1.3'}->{'DG1.3.1'};
                 }
 
-                if(isset($dg->{'DG1.4'}->{'DG1.4.1'}))
-                {
+                if (isset($dg->{'DG1.4'}->{'DG1.4.1'})) {
                     $diag->diagnosis_description = $dg->{'DG1.4'}->{'DG1.4.1'};
                 }
 
-                if(!is_null($diag->diagnosis_code) || !is_null($diag->diagnosis_description))
-                {
+                if (!is_null($diag->diagnosis_code) || !is_null($diag->diagnosis_description)) {
                     $diags[] = $diag;
                 }
             }
@@ -830,8 +808,7 @@ class HL7 implements JsonSerializable
      */
     private function getHospitalService()
     {
-        if(isset($this->PV1->{'PV1.10'}->{'PV1.10.1'}) && !is_object($this->PV1->{'PV1.10'}->{'PV1.10.1'}))
-        {
+        if (isset($this->PV1->{'PV1.10'}->{'PV1.10.1'}) && !is_object($this->PV1->{'PV1.10'}->{'PV1.10.1'})) {
             return $this->PV1->{'PV1.10'}->{'PV1.10.1'};
         }
         return null;
@@ -842,8 +819,7 @@ class HL7 implements JsonSerializable
      */
     private function getRace()
     {
-        if(isset($this->PID[0]->{'PID.10'}->{'PID.10.1'}) && !is_object($this->PID[0]->{'PID.10'}->{'PID.10.1'}))
-        {
+        if (isset($this->PID[0]->{'PID.10'}->{'PID.10.1'}) && !is_object($this->PID[0]->{'PID.10'}->{'PID.10.1'})) {
             return $this->normalizeRace($this->PID[0]->{'PID.10'}->{'PID.10.1'});
         }
         return null;
@@ -854,8 +830,7 @@ class HL7 implements JsonSerializable
      */
     private function getEthnicity()
     {
-        if(isset($this->PID[0]->{'PID.22'}->{'PID.22.1'}) && !is_object($this->PID[0]->{'PID.22'}->{'PID.22.1'}))
-        {
+        if (isset($this->PID[0]->{'PID.22'}->{'PID.22.1'}) && !is_object($this->PID[0]->{'PID.22'}->{'PID.22.1'})) {
             return $this->PID[0]->{'PID.22'}->{'PID.22.1'};
         }
         return null;
@@ -866,8 +841,7 @@ class HL7 implements JsonSerializable
      */
     private function getPatientAccountNumber()
     {
-        if(isset($this->PID[0]->{'PID.18'}->{'PID.18.1'}) && !is_object($this->PID[0]->{'PID.18'}->{'PID.18.1'}))
-        {
+        if (isset($this->PID[0]->{'PID.18'}->{'PID.18.1'}) && !is_object($this->PID[0]->{'PID.18'}->{'PID.18.1'})) {
             return $this->PID[0]->{'PID.18'}->{'PID.18.1'};
         }
 
@@ -879,8 +853,7 @@ class HL7 implements JsonSerializable
      */
     private function getAssignedPatientLocation()
     {
-        if(isset($this->PV1->{'PV1.3'}->{'PV1.3.1'}) && !is_object($this->PV1->{'PV1.3'}->{'PV1.3.1'}))
-        {
+        if (isset($this->PV1->{'PV1.3'}->{'PV1.3.1'}) && !is_object($this->PV1->{'PV1.3'}->{'PV1.3.1'})) {
             return $this->PV1->{'PV1.3'}->{'PV1.3.1'};
         }
         return null;
@@ -938,43 +911,29 @@ class HL7 implements JsonSerializable
         $phone->number = "";
         $phone->type = "";
 
-        if(isset($value->{'PID.'.$pid_value.'.3'}) && !is_object($value->{'PID.'.$pid_value.'.3'}))
-        {
-            $phone->type = $value->{'PID.'.$pid_value.'.3'};
-        }
-        else if(isset($value->{'PID.'.$pid_value.'.2'}) && !is_object($value->{'PID.'.$pid_value.'.2'}))
-        {
-            $phone->type = $value->{'PID.'.$pid_value.'.2'};
-        }
-        else
-        {
+        if (isset($value->{'PID.' . $pid_value . '.3'}) && !is_object($value->{'PID.' . $pid_value . '.3'})) {
+            $phone->type = $value->{'PID.' . $pid_value . '.3'};
+        } else if (isset($value->{'PID.' . $pid_value . '.2'}) && !is_object($value->{'PID.' . $pid_value . '.2'})) {
+            $phone->type = $value->{'PID.' . $pid_value . '.2'};
+        } else {
             $phone->type = "";
         }
 
-        if($pid_value == 14)
-        {
+        if ($pid_value == 14) {
             $phone->type = 'WRK';
         }
 
-        if(isset($value->{'PID.'.$pid_value.'.1'}) && !is_object($value->{'PID.'.$pid_value.'.1'}) && $value->{'PID.'.$pid_value.'.1'} != "")
-        {
-            $phone->number = $value->{'PID.'.$pid_value.'.1'};
-        }
-        else if(isset($value->{'PID.'.$pid_value.'.6'}) && !is_object($value->{'PID.'.$pid_value.'.6'}) && isset($value->{'PID.'.$pid_value.'.7'}) && !is_object($value->{'PID.'.$pid_value.'.7'}))
-        {
-            $phone->number = $value->{'PID.'.$pid_value.'.6'}.$value->{'PID.'.$pid_value.'.7'};
-        }
-        else
-        {
+        if (isset($value->{'PID.' . $pid_value . '.1'}) && !is_object($value->{'PID.' . $pid_value . '.1'}) && $value->{'PID.' . $pid_value . '.1'} != "") {
+            $phone->number = $value->{'PID.' . $pid_value . '.1'};
+        } else if (isset($value->{'PID.' . $pid_value . '.6'}) && !is_object($value->{'PID.' . $pid_value . '.6'}) && isset($value->{'PID.' . $pid_value . '.7'}) && !is_object($value->{'PID.' . $pid_value . '.7'})) {
+            $phone->number = $value->{'PID.' . $pid_value . '.6'} . $value->{'PID.' . $pid_value . '.7'};
+        } else {
             $phone->number = "";
         }
 
-        if($phone->number == "")
-        {
+        if ($phone->number == "") {
             return null;
-        }
-        else if($phone->type == "NET")
-        {
+        } else if ($phone->type == "NET") {
             return null;
         }
 
@@ -990,12 +949,10 @@ class HL7 implements JsonSerializable
      */
     private function normalizePhoneTypes($type)
     {
-        if($type == "")
-        {
+        if ($type == "") {
             $type = 'PRN';
         }
-        switch (strtoupper($type))
-        {
+        switch (strtoupper($type)) {
             case "HOME":
             case "PRN":
                 return "Primary Residence Number";
@@ -1041,22 +998,17 @@ class HL7 implements JsonSerializable
      */
     private function formatPhone($input)
     {
-        if(is_object($input))
-        {
+        if (is_object($input)) {
             return "";
         }
 
-        $phone = preg_replace( '/[^0-9]/', '', $input);
-        if(strlen($phone) > 10)
-        {
+        $phone = preg_replace('/[^0-9]/', '', $input);
+        if (strlen($phone) > 10) {
             return substr($phone, -10);
         }
-        if(strlen($phone) == 8)
-        {
+        if (strlen($phone) == 8) {
             return preg_replace("/([0-9a-zA-Z]{3})([0-9a-zA-Z]{4})/", "$1-$2", $phone);
-        }
-        else if(strlen($phone) == 10)
-        {
+        } else if (strlen($phone) == 10) {
             return preg_replace("/([0-9a-zA-Z]{3})([0-9a-zA-Z]{3})([0-9a-zA-Z]{4})/", "+1($1)$2-$3", $phone);
         }
         return $input;
@@ -1095,8 +1047,7 @@ class HL7 implements JsonSerializable
             $address->country = $this->normalizeCountry($value->{'PID.11.6'});
         }
 
-        if(is_null($address->street_1)  && is_null($address->street_2) && is_null($address->city) && is_null($address->state) && is_null($address->zip))
-        {
+        if (is_null($address->street_1) && is_null($address->street_2) && is_null($address->city) && is_null($address->state) && is_null($address->zip)) {
             return null;
         }
         return $address;
@@ -1108,15 +1059,13 @@ class HL7 implements JsonSerializable
      */
     private function formatZip($input)
     {
-        $zip = preg_replace( '/[^0-9]/', '', $input);
+        $zip = preg_replace('/[^0-9]/', '', $input);
 
-        if(strlen($zip) == 5)
-        {
+        if (strlen($zip) == 5) {
             return $zip;
         }
-        if(strlen($zip) == 9)
-        {
-            return substr($zip, 0,5)."-".substr($zip, 5);
+        if (strlen($zip) == 9) {
+            return substr($zip, 0, 5) . "-" . substr($zip, 5);
         }
         return $input;
     }
@@ -1127,8 +1076,7 @@ class HL7 implements JsonSerializable
      */
     private function normalizeAdmitSource($source)
     {
-        switch ($source)
-        {
+        switch ($source) {
             case 1:
                 return "Physician referral";
             case 2:
@@ -1158,8 +1106,7 @@ class HL7 implements JsonSerializable
      */
     private function normalizeRace($race)
     {
-        switch ($race)
-        {
+        switch ($race) {
             case "1002-5":
                 return "American Indian or Alaska Native";
             case "2028-9":
@@ -1183,8 +1130,7 @@ class HL7 implements JsonSerializable
      */
     private function normalizeMessageType($type)
     {
-        switch (strtoupper($type))
-        {
+        switch (strtoupper($type)) {
             case 'A01':
                 return "Admit - A01";
             case 'A02':
