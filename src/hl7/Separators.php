@@ -1,8 +1,6 @@
 <?php
 
-
-namespace Uhin\HL7;
-
+namespace Uhin\Hl7;
 
 class Separators
 {

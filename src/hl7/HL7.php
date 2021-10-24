@@ -1,10 +1,8 @@
 <?php
 
-namespace Uhin\HL7;
-
+namespace Uhin\Hl7;
 
 use JsonSerializable;
-
 
 class HL7 implements JsonSerializable
 {
