@@ -4,6 +4,7 @@ namespace Uhin\Hl7;
 
 use JsonSerializable;
 
+
 class Field extends Segment implements JsonSerializable
 {
     protected $separators;
