@@ -1,6 +1,6 @@
 <?php
 
-namespace Uhin\Hl7;
+namespace uhin\hl7;
 
 use JsonSerializable;
 
