@@ -1,6 +1,6 @@
 <?php
 
-namespace Uhin\Hl7;
+namespace Uhin\HL7\hl7;
 
 use JsonSerializable;
 
@@ -9,7 +9,7 @@ class Segment implements JsonSerializable
     private $separators;
     public $properties;
 
-    public function __construct($segment,$separators)
+    public function __construct($segment, $separators)
     {
         $this->separators = $separators;
         $this->properties = new \stdClass();

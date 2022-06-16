@@ -1,15 +1,15 @@
 <?php
 
-namespace Uhin\Hl7;
+namespace Uhin\HL7\hl7;
 
 use JsonSerializable;
 
-class MSH Extends Segment implements JsonSerializable
+class MSH extends Segment implements JsonSerializable
 {
     public $properties;
     private $separators;
 
-    public function __construct($segment,$separators)
+    public function __construct($segment, $separators)
     {
         $this->properties = new \stdClass();
         $this->separators = $separators;
