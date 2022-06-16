@@ -13,7 +13,7 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "uhin\\hl7\\": "src/"
+      "Uhin\\HL7\\hl7\\": "src/hl7"
     }
   },
   "require": {
